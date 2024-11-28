@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -75,17 +76,34 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     private static BookACar getBookACar(BookACarDto bookACarDto, User userExist, Car existingCar) {
-        BookACar bookACar= new BookACar();
+        BookACar bookACar = new BookACar();
         bookACar.setUser(userExist);
         bookACar.setCar(existingCar);
         bookACar.setFromDate(bookACarDto.getFromDate());
         bookACar.setToDate(bookACarDto.getToDate());
         bookACar.setBookCarStatus(BookCarStatus.PENDING);
-        long diffInMilliseconds = bookACarDto.getToDate().getTime() - bookACarDto.getFromDate().getTime();
-        long days = TimeUnit.MILLISECONDS.toDays(diffInMilliseconds);
-        long actualDays = (days == 0) ? 1 : days; // Nếu không đủ 24 giờ, vẫn tính là 1 ngày
-        bookACar.setDays(actualDays);
-        bookACar.setPrice(existingCar.getPrice() * actualDays);
+
+        // Lấy ngày bắt đầu và ngày kết thúc
+        Date fromDate = bookACarDto.getFromDate();
+        Date toDate = bookACarDto.getToDate();
+
+        // Đảm bảo toDate là sau fromDate
+        if (toDate.before(fromDate)) {
+            throw new IllegalArgumentException("To Date must be after From Date.");
+        }
+
+        // Tính số ngày
+        long diffInMilliseconds = toDate.getTime() - fromDate.getTime();
+        long days = TimeUnit.MILLISECONDS.toDays(diffInMilliseconds) + 1; // Cộng thêm 1 để tính cả ngày bắt đầu
+
+        // Đảm bảo ít nhất 1 ngày nếu có đặt xe
+        if (days < 1) {
+            days = 1;
+        }
+
+        bookACar.setDays(days);
+        bookACar.setPrice(existingCar.getPrice() * days);
+
         return bookACar;
     }
 
