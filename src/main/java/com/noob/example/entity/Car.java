@@ -52,7 +52,7 @@ public class Car {
 
         // Lấy ghi chú
         if (notes != null) {
-            carDto.setNotes(notes.stream().map(CarNote::getNoted).toList());
+            carDto.setNotes(notes.stream().map(CarNote::getNote).toList());
 
         }
         return carDto;

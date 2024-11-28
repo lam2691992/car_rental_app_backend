@@ -66,14 +66,14 @@ public class AdminServiceImpl implements AdminService {
                 for (String note : carDto.getNotes()) {
                     CarNote carNote = new CarNote();
                     carNote.setCar(car);
-                    carNote.setNoted(note != null ? note : "No note"); // Đảm bảo luôn có giá trị cho `noted`
+                    carNote.setNote(note != null ? note : "No note"); // Đảm bảo luôn có giá trị cho `noted`
                     carNoteRepository.save(carNote);
                 }
             } else {
                 // Nếu không có ghi chú, thêm một ghi chú mặc định
                 CarNote defaultCarNote = new CarNote();
                 defaultCarNote.setCar(car);
-                defaultCarNote.setNoted("No note"); // Ghi chú mặc định nếu không có
+                defaultCarNote.setNote("No note"); // Ghi chú mặc định nếu không có
                 carNoteRepository.save(defaultCarNote);
             }
 
@@ -105,7 +105,7 @@ public class AdminServiceImpl implements AdminService {
             // Lấy danh sách ghi chú
             List<String> notes = carNoteRepository.findByCarId(car.getId())
                     .stream()
-                    .map(CarNote::getNoted)
+                    .map(CarNote::getNote)
                     .collect(Collectors.toList());
             carDto.setNotes(notes);
 

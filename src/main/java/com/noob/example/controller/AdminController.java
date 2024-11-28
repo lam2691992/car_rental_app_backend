@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
+    @RestController
     @RequestMapping("/api/admin")
-@RequiredArgsConstructor
-public class AdminController {
+    @RequiredArgsConstructor
+    public class AdminController {
 
     private final AdminService adminService;
 

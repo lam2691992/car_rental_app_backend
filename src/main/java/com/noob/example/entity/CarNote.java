@@ -15,8 +15,8 @@ public class CarNote {
     @JoinColumn(name = "car_id", nullable = false) // Khóa ngoại liên kết tới bảng cars
     private Car car;
 
-    @Column(name = "note", nullable = false) // Chỉ dùng cột 'note'
-    private String noted;  // Đảm bảo 'noted' trùng tên với thuộc tính trong entity
+    @Column(name = "note", nullable = false)
+    private String note;
 }
 
 
