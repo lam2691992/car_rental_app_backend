@@ -35,7 +35,6 @@ import java.util.List;
         return success ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-
     @GetMapping("/cars")
     public ResponseEntity<?> getAllCars() {
 
@@ -76,6 +75,8 @@ import java.util.List;
        if (success) return ResponseEntity.ok().build();
        return ResponseEntity.notFound().build();
     }
+
+
 
     @PostMapping("/car/search")
     public ResponseEntity<?> searchCar(@RequestBody SearchCarDto searchCarDto) {
