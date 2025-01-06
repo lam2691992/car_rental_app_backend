@@ -1,44 +1,52 @@
 package com.noob.example.services.export;
 
 import com.noob.example.entity.User;
-import org.jxls.common.Context;
-import org.jxls.util.JxlsHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.noob.example.repository.UserRepository;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class UserExportService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserExportService.class);
+    @Autowired
+    private UserRepository userRepository; // UserRepository để truy cập dữ liệu
 
-    public void exportUsersToExcel(List<User> users, String outputPath) {
-        try (InputStream template = getClass().getResourceAsStream("/templates/users_template.xlsx");
-             FileOutputStream outputStream = new FileOutputStream(outputPath)) {
+    public ByteArrayInputStream exportUsersToExcel() throws IOException {
+        List<User> userList = userRepository.findAll(); // Lấy danh sách User từ database
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Users");
 
-            if (template == null) {
-                throw new RuntimeException("Template file not found: /templates/users_template.xlsx");
-            }
+        // Tạo tiêu đề
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Name");
+        headerRow.createCell(2).setCellValue("Email");
+        headerRow.createCell(3).setCellValue("Password");
+        headerRow.createCell(4).setCellValue("User Role");
 
-            logger.info("Template loaded successfully");
-            logger.info("Exporting data to: {}", outputPath);
-
-            // Chuẩn bị dữ liệu cho JXLS
-            Context context = new Context();
-            context.putVar("users", users);
-
-            // Sử dụng JXLS để xử lý
-            JxlsHelper.getInstance().processTemplate(template, outputStream, context);
-
-            logger.info("File exported successfully");
-        } catch (Exception e) {
-            logger.error("Error exporting users to Excel: {}", e.getMessage(), e);
-            throw new RuntimeException("Something went wrong", e);
+        // Thêm dữ liệu
+        int rowNum = 1;
+        for (User user : userList) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(user.getId());
+            row.createCell(1).setCellValue(user.getName());
+            row.createCell(2).setCellValue(user.getEmail());
+            row.createCell(3).setCellValue(user.getPassword());
+            row.createCell(4).setCellValue(user.getUserRole().name());
         }
+
+        // Ghi vào ByteArrayOutputStream
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 }
-

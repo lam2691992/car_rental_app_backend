@@ -58,7 +58,7 @@ public class AdminServiceImpl implements AdminService {
                 car.setCarImage(carImage);
             }
 
-            // Lưu Car (Hibernate sẽ tự động lưu CarImage vì cascade)
+            // Save Car (Hibernate sẽ tự động lưu CarImage vì cascade)
             carRepository.save(car);
 
             // Lưu danh sách ghi chú nếu có
@@ -176,10 +176,11 @@ public class AdminServiceImpl implements AdminService {
     public CarDtoListDto searchCar(SearchCarDto searchCarDto) {
         // Sử dụng ExampleMatcher để tìm kiếm dựa trên các thuộc tính của Car
         Car car = new Car();
-        car.setBrand(searchCarDto.getBrand());
-        car.setType(searchCarDto.getType());
-        car.setTransmission(searchCarDto.getTransmission());
-        car.setColor(searchCarDto.getColor());
+        if (searchCarDto.getBrand() != null) car.setBrand(searchCarDto.getBrand());
+        if (searchCarDto.getType() != null) car.setType(searchCarDto.getType());
+        if (searchCarDto.getTransmission() != null) car.setTransmission(searchCarDto.getTransmission());
+        if (searchCarDto.getColor() != null) car.setColor(searchCarDto.getColor());
+
 
         ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
                 .withMatcher("brand", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
@@ -198,6 +199,7 @@ public class AdminServiceImpl implements AdminService {
         if (searchCarDto.getMinPrice() != null && searchCarDto.getMaxPrice() != null) {
             spec = spec.and(BookACarSpecifications.betweenPrice(searchCarDto.getMinPrice(), searchCarDto.getMaxPrice()));
         }
+
 
         // Tạo đối tượng Sort với trường fromDate
         Sort sort = Sort.by(Sort.Order.asc("fromDate"));
@@ -226,5 +228,4 @@ public class AdminServiceImpl implements AdminService {
     public void deleteCar(Long id) {
         carRepository.deleteById(id); // Xóa xe khỏi cơ sở dữ liệu dựa trên ID
     }
-
 }

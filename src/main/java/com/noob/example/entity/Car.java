@@ -2,6 +2,8 @@ package com.noob.example.entity;
 
 import com.noob.example.dto.CarDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class Car {
     private CarImage carImage;
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CarNote> notes = new ArrayList<>();
+
+
 
 
     public CarDto getCarDto() {
